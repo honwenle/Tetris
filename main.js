@@ -1,9 +1,12 @@
 var ctx = document.getElementById('can').getContext('2d');
-var isPause = false;
 var freezeList = [],
     nowList = [],
     nextList = [],
-    dir = 0;
+    dir = 0,
+    nowIndex = 0,
+    isPause = false,
+    isOver = false,
+    clearRows = [];
 var typeList = [
     [44, 45, 64, 65], // O
     [64, 44, 24 ,4], // I
@@ -13,8 +16,7 @@ var typeList = [
     [64, 65, 45, 25], // J
     [64, 44, 43, 45] // T
 ];
-var colorList = ['#0ff','#0f0', '#f0f', '#60f', '#f60', '#f00', '#ff0'],
-    nowIndex = 0;
+var colorList = ['#0ff','#0f0', '#f0f', '#60f', '#f60', '#f00', '#ff0'];
 function getID (x, y) {}
 function getXY (id) {
     return {
@@ -29,12 +31,21 @@ function draw (obj, color) {
         ctx.fillRect(xy.x, xy.y, 18, 18);
     });
 }
+function drawFreeze () {
+    ctx.clearRect(0, 100, 200, 400);
+    ctx.fillStyle = '#888';
+    freezeList.forEach(function(n) {
+        var xy = getXY(n);
+        ctx.fillRect(xy.x, xy.y, 18, 18);
+    });
+}
 function newList () {
+    clearRows = [];
     nowIndex = Math.floor(Math.random() * colorList.length);
     nowList = typeList[nowIndex];
 }
 function move () {
-    if (isPause) {
+    if (isPause || isOver) {
         return false;
     }
     nextList = nowList.map(function (n) {
@@ -53,20 +64,56 @@ function move () {
     });
     if (canFreeze) {
         freezeList = freezeList.concat(nowList);
-        // TODO: 检查、消除
-        // TODO: 判断死亡
+        drawFreeze();
+        var waitOver = false;
+        nowList.forEach(function (n) {
+            var start = n - n % 20,
+                canClear = true;
+            for (var i = 0; i < 10; i++) {
+                if (freezeList.indexOf(i+start) < 0) {
+                    canClear = false;
+                    break;
+                }
+            }
+            if (canClear) {
+                if (clearRows.indexOf(start) < 0) {
+                    clearRows.push(start);
+                }
+            } else if (n < 60) {
+                waitOver = true;
+            }
+        });
+        if (clearRows.length > 0) {
+            clear();
+        } else if (waitOver) {
+            isOver = true;
+            console.log('over')
+        }
         newList();
-        return false;
-    }
-    if (canMove) {
+    } else if (canMove) {
         draw(nowList, '#000');
         nowList = nextList;
         nextList = [];
         draw(nowList);
     }
 }
-function rotate (x, y) {}
+function clear () {
+    clearRows.sort();
+    clearRows.forEach(function (start) {
+        freezeList = freezeList.filter(function (n) {
+            return n < start || n >= start + 20;
+        });
+        freezeList = freezeList.map(function (n) {
+            return n < start ? n + 20 : n;
+        });
+    });
+    drawFreeze();
+}
+function rotate () {}
 function update () {
+    if (isOver) {
+        return false;
+    }
     dir = 20;
     move();
     setTimeout(update, 500);
@@ -84,6 +131,7 @@ document.onkeydown = function (e) {
 };
 
 function drawLine () {
+    ctx.clearRect(0, 0, 200, 500);
     ctx.beginPath();
     ctx.strokeStyle = '#f00';
     ctx.lineWidth = 1;
@@ -93,6 +141,10 @@ function drawLine () {
     ctx.closePath();
 }
 function init () {
+    freezeList = [];
+    nowList = [];
+    nextList = [];
+    isPause = false;
     drawLine();
     newList();
     update();
