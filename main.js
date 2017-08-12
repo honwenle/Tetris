@@ -17,9 +17,13 @@ var typeList = [
     [64, 44, 43, 45] // T
 ];
 var colorList = ['#0ff','#0f0', '#f0f', '#60f', '#f60', '#f00', '#ff0'];
-function getID (x, y) {}
+function getID (row, col) {
+    return row * 20 + col;
+}
 function getXY (id) {
     return {
+        row: ~~(id / 20),
+        col: id % 20,
         x: id % 20 * 20 + 1,
         y: ~~(id / 20) * 20 + 1
     }
@@ -44,13 +48,26 @@ function newList () {
     nowIndex = Math.floor(Math.random() * colorList.length);
     nowList = typeList[nowIndex];
 }
+function rotate () {
+    var xyList = [];
+    var offset = getXY(Math.min.apply(null, nowList))
+    nowList.forEach(function (n) {
+        var xy = getXY(n);
+        xyList.push(getID(xy.col - offset.col + offset.row, -xy.row + offset.row + 3 + offset.col - 2));
+    });
+    return xyList;
+}
 function move () {
     if (isPause || isOver) {
         return false;
     }
-    nextList = nowList.map(function (n) {
-        return n + dir;
-    });
+    if (dir == 'r') {
+        nextList = rotate();
+    } else if(dir) {
+        nextList = nowList.map(function (n) {
+            return n + dir;
+        });
+    }
     var canMove = true, canFreeze = false;
     nextList.forEach(function (n) {
         if (dir==-1 && n%20==19 || dir==1 && n%20==10) {
@@ -109,7 +126,6 @@ function clear () {
     });
     drawFreeze();
 }
-function rotate () {}
 function update () {
     if (isOver) {
         return false;
@@ -123,11 +139,7 @@ document.onkeydown = function (e) {
         isPause = !isPause;
     }
     dir = [-1, 'r', 1, 20][(e||event).keyCode - 37] || 0;
-    if (dir == 'r') {
-        rotate();
-    } else if(dir) {
-        move();
-    }
+    dir && move();
 };
 
 function drawLine () {
