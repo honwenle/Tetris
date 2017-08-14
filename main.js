@@ -62,9 +62,10 @@ function rotate () {
         minRow = Math.min(minRow, xy.row);
         minCol = Math.min(minCol, xy.col);
     });
+    overCol = Math.max(maxRow + minCol - minRow - 9, 0);
     nowList.forEach(function (n) {
         var xy = getXY(n);
-        xyList.push(getID(xy.col - minCol + minRow, -xy.row + maxRow + minCol));
+        xyList.push(getID(xy.col - minCol + minRow, -xy.row + maxRow + minCol - overCol));
     });
     return xyList;
 }
@@ -81,7 +82,7 @@ function move () {
     }
     var canMove = true, canFreeze = false;
     nextList.forEach(function (n) {
-        if (dir==-1 && n%20==19 || dir==1 && n%20==10) {
+        if (n%20==19 || n%20==10 || n > 499) {
             canMove = false;
         }
         if (dir != 20 && freezeList.indexOf(n) > -1) {
