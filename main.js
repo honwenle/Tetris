@@ -50,10 +50,21 @@ function newList () {
 }
 function rotate () {
     var xyList = [];
-    var offset = getXY(Math.min.apply(null, nowList))
+    var xy = getXY(nowList[0]);
+    var maxRow = 0,
+        maxCol = 0,
+        minRow = xy.row,
+        minCol = xy.col;
     nowList.forEach(function (n) {
         var xy = getXY(n);
-        xyList.push(getID(xy.col - offset.col + offset.row, -xy.row + offset.row + 3 + offset.col - 2));
+        maxRow = Math.max(maxRow, xy.row);
+        maxCol = Math.max(maxCol, xy.col);
+        minRow = Math.min(minRow, xy.row);
+        minCol = Math.min(minCol, xy.col);
+    });
+    nowList.forEach(function (n) {
+        var xy = getXY(n);
+        xyList.push(getID(xy.col - minCol + minRow, -xy.row + maxRow + minCol));
     });
     return xyList;
 }
@@ -73,10 +84,12 @@ function move () {
         if (dir==-1 && n%20==19 || dir==1 && n%20==10) {
             canMove = false;
         }
-        if ((dir==-1 || dir==1) && freezeList.indexOf(n) > -1) {
+        if (dir != 20 && freezeList.indexOf(n) > -1) {
             canMove = false;
-        } else if (n > 499 || dir==20 && freezeList.indexOf(n) > -1) {
-            canFreeze = true;
+        } else if (dir == 20) {
+            if (n > 499 || freezeList.indexOf(n) > -1) {
+                canFreeze = true;
+            }
         }
     });
     if (canFreeze) {
