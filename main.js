@@ -7,7 +7,9 @@ var freezeList = [],
     isPause = false,
     isOver = false,
     clearRows = [],
-    score = 0;
+    score = 0,
+    speed = 500,
+    lv = 0;
 var typeList = [
     [44, 45, 64, 65], // O
     [64, 44, 24 ,4], // I
@@ -132,6 +134,8 @@ function move () {
 }
 function showScore () {
     score += scoreList[clearRows.length];
+    lv = ~~(score / 1000);
+    speed = speed * Math.sqrt(.8, lv);
     ctx.clearRect(0, 0, 200, 18);
     ctx.font = '18px 微软雅黑';
     ctx.fillStyle = '#fff';
@@ -156,7 +160,7 @@ function update () {
     }
     dir = 20;
     move();
-    setTimeout(update, 500);
+    setTimeout(update, speed);
 }
 document.onkeydown = function (e) {
     if (e.keyCode == 32) {
