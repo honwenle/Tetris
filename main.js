@@ -122,7 +122,7 @@ function move () {
             clear();
         } else if (waitOver) {
             isOver = true;
-            console.log('over')
+            alert('得分：' + score);
         }
         newList();
     } else if (canMove) {
