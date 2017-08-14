@@ -6,7 +6,8 @@ var freezeList = [],
     nowIndex = 0,
     isPause = false,
     isOver = false,
-    clearRows = [];
+    clearRows = [],
+    score = 0;
 var typeList = [
     [44, 45, 64, 65], // O
     [64, 44, 24 ,4], // I
@@ -16,6 +17,7 @@ var typeList = [
     [64, 65, 45, 25], // J
     [64, 44, 43, 45] // T
 ];
+var scoreList = [0, 100, 250, 400 ,800];
 var colorList = ['#0ff','#0f0', '#f0f', '#60f', '#f60', '#f00', '#ff0'];
 function getID (row, col) {
     return row * 20 + col;
@@ -128,7 +130,15 @@ function move () {
         draw(nowList);
     }
 }
+function showScore () {
+    score += scoreList[clearRows.length];
+    ctx.clearRect(0, 0, 200, 18);
+    ctx.font = '18px 微软雅黑';
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Score: ' + score, 0, 18);
+}
 function clear () {
+    showScore();
     clearRows.sort();
     clearRows.forEach(function (start) {
         freezeList = freezeList.filter(function (n) {
@@ -171,8 +181,10 @@ function init () {
     nowList = [];
     nextList = [];
     isPause = false;
+    score = 0;
     drawLine();
     newList();
     update();
+    showScore();
 }
 init();
