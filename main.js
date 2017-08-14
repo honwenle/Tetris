@@ -135,7 +135,7 @@ function move () {
 function showScore () {
     score += scoreList[clearRows.length];
     lv = ~~(score / 1000);
-    speed = speed * Math.sqrt(.8, lv);
+    speed = speed * Math.pow(.8, lv);
     ctx.clearRect(0, 0, 200, 18);
     ctx.font = '18px 微软雅黑';
     ctx.fillStyle = '#fff';
