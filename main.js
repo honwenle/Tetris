@@ -134,8 +134,8 @@ function move () {
 }
 function showScore () {
     score += scoreList[clearRows.length];
-    lv = ~~(score / 1000);
-    speed = speed * Math.pow(.8, lv);
+    lv = ~~(score/1000);
+    speed = 500 * Math.pow(.8, lv);
     ctx.clearRect(0, 0, 200, 18);
     ctx.font = '18px 微软雅黑';
     ctx.fillStyle = '#fff';
@@ -186,6 +186,8 @@ function init () {
     nextList = [];
     isPause = false;
     score = 0;
+    speed = 500;
+    lv = 0;
     drawLine();
     newList();
     update();
