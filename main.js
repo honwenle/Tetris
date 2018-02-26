@@ -169,6 +169,28 @@ document.onkeydown = function (e) {
     dir = [-1, 'r', 1, 20][(e||event).keyCode - 37] || 0;
     dir && move();
 };
+var sX, sY;
+document.addEventListener('touchstart', function (e) {
+    e.preventDefault();
+    sX = e.touches[0].pageX;
+    sY = e.touches[0].pageY;
+}, false);
+document.addEventListener('touchend', function (e) {
+    var eX = e.changedTouches[0].pageX,
+        eY = e.changedTouches[0].pageY;
+    var dtX = eX - sX,
+        dtY = eY - sY;
+    if (dtX > 20 && dtX > Math.abs(dtY)) {
+        dir = 1;
+    } else if (dtX < -20 && dtX < -Math.abs(dtY)) {
+        dir = -1;
+    } else if (dtY > 20) {
+        dir = 20;
+    } else if (dtY < -20) {
+        dir = 'r';
+    }
+    move();
+}, false);
 
 function drawLine () {
     ctx.clearRect(0, 0, 200, 500);
