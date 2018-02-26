@@ -188,6 +188,8 @@ document.addEventListener('touchend', function (e) {
         dir = 20;
     } else if (dtY < -20) {
         dir = 'r';
+    } else {
+        return false;
     }
     move();
 }, false);
